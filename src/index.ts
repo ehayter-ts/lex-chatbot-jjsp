@@ -98,7 +98,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.onreadystatechange = function() {
             try {
                 if (xhr.readyState !== 4) return;
-                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
+                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status + " " + xhr.responseText);
 
                 var obj = JSON.parse(xhr.responseText);
                 postResult({
