@@ -94,31 +94,31 @@ async function onexecuteMessage(methodName: string, properties: SingleRecord, pa
 function onexecutePostText(properties: SingleRecord, configuration: SingleRecord): Promise<void> {
     return new Promise<void>((resolve, reject) =>
     {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
+        // var xhr = new XMLHttpRequest();
+        // xhr.onreadystatechange = function() {
             try {
-                if (xhr.readyState !== 4) return;
-                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
+        //         if (xhr.readyState !== 4) return;
+        //         if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
 
-                var obj = JSON.parse(xhr.responseText);
+        //         var obj = JSON.parse(xhr.responseText);
                 postResult({
-                        "outputText": obj.message,
+                        "outputText": "Test",
                     });
                 resolve();
             } catch (e) {
                 reject(e);
             }
-        };
+        //};
         
         var body = {
             inputText: properties["inputText"].toString()
         };
 
-        xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/20201021/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('X-Amz-Date', '20201021T181745Z');
-        xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
-        xhr.send(JSON.stringify(body));
+        // xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
+        // xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/20201021/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
+        // xhr.setRequestHeader('Content-Type', 'application/json');
+        // xhr.setRequestHeader('X-Amz-Date', '20201021T181745Z');
+        // xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
+        // xhr.send(JSON.stringify(body));
     });
 }
