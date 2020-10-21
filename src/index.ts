@@ -49,7 +49,7 @@ function getSignatureKey() {
 ondescribe = async function({configuration}): Promise<void> {
     postSchema({
         objects: {
-            "Message": {
+            "message": {
                 displayName: "Message",
                 description: "Represents a text reply",
                 properties: {
