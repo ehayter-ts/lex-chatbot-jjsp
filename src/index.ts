@@ -28,7 +28,7 @@ metadata = {
     }
 };
 
-var crypto = require("crypto-js");
+//var crypto = require("crypto-js");
 
 function getDateStamp()
 {
@@ -38,12 +38,12 @@ function getDateStamp()
 }
 
 function getSignatureKey() {
-    var kDate = crypto.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
-    var kRegion = crypto.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
-    var kService = crypto.HmacSHA256("lex", kRegion);
-    var kSigning = crypto.HmacSHA256("aws4_request", kService);
+    //var kDate = crypto.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
+    //var kRegion = crypto.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
+    //var kService = crypto.HmacSHA256("lex", kRegion);
+    //var kSigning = crypto.HmacSHA256("aws4_request", kService);
 
-    return kSigning;
+    return "dc6f5ddf6df53218de4142803eadfe8649f6e718a2d7b01a3e509bb8452fb52e";//kSigning;
 }
 
 ondescribe = async function({configuration}): Promise<void> {
@@ -115,8 +115,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         };
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/${getDateStamp()}/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/20201021/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Amz-Date', '20201021T181745Z');
+        xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
         xhr.send(JSON.stringify(body));
     });
 }
