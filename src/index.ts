@@ -138,7 +138,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', getDateStamp());
         xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.HmacSHA256("" + signature, "" + body.inputText));
-        xhr.setRequestHeader('Content-Length', bodyText.length.toString());
+        //xhr.setRequestHeader('Content-Length', bodyText.length.toString());
 
         xhr.send(bodyText);
     });
