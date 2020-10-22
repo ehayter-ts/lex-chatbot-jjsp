@@ -1,5 +1,5 @@
 import '@k2oss/k2-broker-core';
-import crypto from 'crypto-js';
+import CryptoJS from "crypto-js/core";
 
 metadata = {
     systemName: "AWS_Lex_ChatBot",
@@ -37,15 +37,15 @@ function getDateStamp()
 }
 
 function getSignatureKey() {
-    var kDate = crypto.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
-    var kRegion = crypto.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
-    var kService = crypto.HmacSHA256("lex", kRegion);
-    var kSigning = crypto.HmacSHA256("aws4_request", kService);
+    var kDate = CryptoJS.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
+    var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
+    var kService = CryptoJS.HmacSHA256("lex", kRegion);
+    var kSigning = CryptoJS.HmacSHA256("aws4_request", kService);
 
     return kSigning;
 }
 
-ondescribe = async function({configuration}): Promise<void> {
+ondescribe = async function({}): Promise<void> {
     postSchema({
         objects: {
             "message": {
@@ -74,15 +74,15 @@ ondescribe = async function({configuration}): Promise<void> {
     });
 }
 
-onexecute = async function({objectName, methodName, parameters, properties, configuration, schema}): Promise<void> {
+onexecute = async function({objectName, methodName, parameters, properties, configuration}): Promise<void> {
     switch (objectName)
     {
-        case "message": await onexecuteMessage(methodName, properties, parameters, configuration); break;
+        case "message": await onexecuteMessage(methodName, properties, configuration); break;
         default: throw new Error("The object " + objectName + " is not supported.");
     }
 }
 
-async function onexecuteMessage(methodName: string, properties: SingleRecord, parameters: SingleRecord, configuration: SingleRecord): Promise<void> {
+async function onexecuteMessage(methodName: string, properties: SingleRecord, configuration: SingleRecord): Promise<void> {
     switch (methodName)
     {
         case "postText": await onexecutePostText(properties, configuration); break;
@@ -99,7 +99,6 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 if (xhr.readyState !== 4) return;
                 if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status + " " + xhr.responseText);
 
-                var obj = JSON.parse(xhr.responseText);
                 postResult({
                         "outputText": "Test",
                     });

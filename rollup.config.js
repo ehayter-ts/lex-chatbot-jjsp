@@ -39,6 +39,9 @@ function buildConfig(inputFile) {
     return {
         input: inputFile,
         output: {
+            globals: {
+                'crypto': 'crypto'
+            },
             file: 'dist/' + outputFile,
             format: 'iife',
             sourcemap: true,
