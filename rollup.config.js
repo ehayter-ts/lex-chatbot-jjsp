@@ -23,7 +23,7 @@ function buildConfig(inputFile) {
     const runtimeHelpers = true;
 
     const plugins = [
-        resolve({ preferBuiltins: false, browser: false }),
+        resolve(),
         commonjs({
             include: 'node_modules/**'
          }),
