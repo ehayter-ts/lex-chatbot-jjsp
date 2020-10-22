@@ -39,6 +39,13 @@ function getDateStamp()
     return date.toISOString();
 }
 
+function getURLDate()
+{
+    var date = new Date();
+
+    return date.getFullYear().toString() + ('0' + (date.getMonth()+1)).slice(-2) + ('0' + (date.getDate())).slice(-2);
+}
+
 function getSignatureKey() {
     var kDate = CryptoJS.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
     var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
@@ -100,7 +107,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.onreadystatechange = function() {
             try {
                 if (xhr.readyState !== 4) return;
-                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status + " " + xhr.responseText);
+                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
 
                 postResult({
                         "outputText": "Test",
@@ -117,7 +124,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
 
         var bodyText = JSON.stringify(body);
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/20201021/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/${getURLDate()}/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', getDateStamp());
         xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
