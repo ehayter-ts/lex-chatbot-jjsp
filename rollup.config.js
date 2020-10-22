@@ -27,9 +27,9 @@ function buildConfig(inputFile) {
             moduleDirectory: 'crypto-js'
           } }),
         commonjs(),
+        babel({ extensions, runtimeHelpers }),
         replace({ BUILD_ENV, 'process.env.NODE_ENV': BUILD_ENV }),
-        json(),
-        babel({ extensions, runtimeHelpers })
+        json()
     ];
 
     if (!devBuild) {
