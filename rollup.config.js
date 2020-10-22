@@ -23,10 +23,10 @@ function buildConfig(inputFile) {
     const runtimeHelpers = true;
 
     const plugins = [
-        resolve({ preferBuiltins: false, browser: false, customResolveOptions: {
-            moduleDirectory: 'crypto-js'
-          } }),
-        commonjs(),
+        resolve({ preferBuiltins: false, browser: false }),
+        commonjs({
+            include: 'node_modules/**'
+         }),
         babel({ extensions, runtimeHelpers }),
         replace({ BUILD_ENV, 'process.env.NODE_ENV': BUILD_ENV }),
         json()
