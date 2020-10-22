@@ -67,5 +67,8 @@
   },
   "dependencies": {
     "crypto-js": "^4.0.0"
+  },
+  "browser": {
+    "crypto": false
   }
 }
