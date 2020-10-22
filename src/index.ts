@@ -1,4 +1,5 @@
 import '@k2oss/k2-broker-core';
+import crypto from 'crypto-js';
 
 metadata = {
     systemName: "AWS_Lex_ChatBot",
@@ -28,22 +29,20 @@ metadata = {
     }
 };
 
-//var crypto = require("crypto-js");
-
 function getDateStamp()
 {
     var date = new Date();
 
-    return date.toISOString();//.getFullYear().toString() + ('0' + (date.getMonth()+1)).slice(-2).toString() + ('0' + date.getDate()).slice(-2) + 'T' + ('0' + date.getHours()).slice(-2) + ('0' + date.getMinutes()).slice(-2) + "1Z";
+    return date.toISOString();
 }
 
 function getSignatureKey() {
-    //var kDate = crypto.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
-    //var kRegion = crypto.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
-    //var kService = crypto.HmacSHA256("lex", kRegion);
-    //var kSigning = crypto.HmacSHA256("aws4_request", kService);
+    var kDate = crypto.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
+    var kRegion = crypto.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
+    var kService = crypto.HmacSHA256("lex", kRegion);
+    var kSigning = crypto.HmacSHA256("aws4_request", kService);
 
-    return "dc6f5ddf6df53218de4142803eadfe8649f6e718a2d7b01a3e509bb8452fb52e";//kSigning;
+    return kSigning;
 }
 
 ondescribe = async function({configuration}): Promise<void> {

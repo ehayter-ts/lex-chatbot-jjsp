@@ -23,7 +23,7 @@ function buildConfig(inputFile) {
     const runtimeHelpers = true;
 
     const plugins = [
-        resolve(),
+        resolve({ preferBuiltins: false }),
         commonjs(),
         replace({ BUILD_ENV, 'process.env.NODE_ENV': BUILD_ENV }),
         json(),
