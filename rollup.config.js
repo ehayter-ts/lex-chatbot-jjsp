@@ -40,7 +40,7 @@ function buildConfig(inputFile) {
         input: inputFile,
         output: {
             globals: {
-                'crypto': 'crypto'
+                'crypto': 'CryptoJS'
             },
             file: 'dist/' + outputFile,
             format: 'iife',
