@@ -1,6 +1,5 @@
 import '@k2oss/k2-broker-core';
-
-var crypto = require("crypto-js");
+import crypto from "crypto-js";
 
 metadata = {
     systemName: "AWS_Lex_ChatBot",
