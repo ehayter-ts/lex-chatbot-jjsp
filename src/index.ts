@@ -134,10 +134,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var signature = getSignatureKey();
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${getURLDate()}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;range, Signature=${signature}`);
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${getURLDate()}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${signature}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', getDateStamp());
-        //xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.HmacSHA256(signature, properties["inputText"].toString()));
+        xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.HmacSHA256(signature, properties["inputText"].toString()));
         xhr.setRequestHeader('Content-Length', bodyText.length.toString());
 
         xhr.send(bodyText);
