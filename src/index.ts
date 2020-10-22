@@ -1,8 +1,6 @@
 import '@k2oss/k2-broker-core';
 import CryptoJS from "crypto-js/core";
-import sha256 from 'crypto-js/sha256';
-import hmacSHA512 from 'crypto-js/hmac-sha512';
-import Base64 from 'crypto-js/enc-base64';
+import 'crypto-js/hmac-sha256';
 
 metadata = {
     systemName: "AWS_Lex_ChatBot",
