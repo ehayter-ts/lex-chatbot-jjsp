@@ -122,10 +122,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
 
         var bodyText = JSON.stringify(body);
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"]}/${getURLDate()}/${configuration["AwsRegion"]}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${getSignatureKey()}`);
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${getURLDate()}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=x-amz-date, Signature=${getSignatureKey()}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', getDateStamp());
-        xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
+        //xhr.setRequestHeader('X-Amz-Content-Sha256', 'beaead3198f7da1e70d03ab969765e0821b24fc913697e929e726aeaebf0eba3');
         xhr.setRequestHeader('Content-Length', bodyText.length.toString());
 
         xhr.send(bodyText);
