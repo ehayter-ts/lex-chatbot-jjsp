@@ -41,7 +41,7 @@ function getAmzDate(dateStr) {
     return dateStr;
   }
 
-function getSignatureKey(dateStamp) {
+function getSignatureKey(dateStamp:string) {
     var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + metadata.configuration["UserID"]);
     var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
     var kService = CryptoJS.HmacSHA256("lex", kRegion);
@@ -116,10 +116,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         };
 
         var bodyText = JSON.stringify(body);
-        var authKey = CryptoJS.HmacSHA256(bodyText, signature);
         var amzDate = getAmzDate(new Date().toISOString());
         var authDate = amzDate.split("T")[0];
         var signature = getSignatureKey(amzDate);
+        var authKey = CryptoJS.HmacSHA256(bodyText, signature);
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${authKey}`);
