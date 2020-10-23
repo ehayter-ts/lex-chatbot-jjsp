@@ -133,7 +133,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
             canonicalReqHash;
 
         // Sign our String-to-Sign with our Signing Key
-        var authKey = CryptoJS.HmacSHA256(stringToSign, signature);
+        var authKey = CryptoJS.HmacSHA256(signature, stringToSign);
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
