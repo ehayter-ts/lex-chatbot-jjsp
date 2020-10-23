@@ -100,6 +100,10 @@ async function onexecuteMessage(methodName: string, properties: SingleRecord, co
 
 function onexecutePostText(properties: SingleRecord, configuration: SingleRecord): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+        var body = {
+            'inputText': properties["inputText"].toString()
+        };
+        
         var bodyText = JSON.stringify(body);
         var amzDate = getAmzDate(new Date().toISOString());
         var authDate = amzDate.split("T")[0];
@@ -148,10 +152,6 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 });
                 resolve();
             }
-        };
-        
-        var body = {
-            'inputText': properties["inputText"].toString()
         };
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
