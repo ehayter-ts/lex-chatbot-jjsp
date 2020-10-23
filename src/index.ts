@@ -30,34 +30,19 @@ metadata = {
     }
 };
 
-function getDateStamp() {
-    var date = new Date();
+function getAmzDate(dateStr) {
+    var chars = [":","-"];
+    for (var i=0;i<chars.length;i++) {
+      while (dateStr.indexOf(chars[i]) != -1) {
+        dateStr = dateStr.replace(chars[i],"");
+      }
+    }
+    dateStr = dateStr.split(".")[0] + "Z";
+    return dateStr;
+  }
 
-    return date.toISOString();
-}
-
-function getURLDate() {
-    var date = new Date();
-
-    return date.getFullYear().toString() + ('0' + (date.getMonth() + 1)).slice(-2) + ('0' + (date.getDate())).slice(-2);
-}
-
-function getTestSignature() {
-    var key = 'wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY'
-    var dateStamp = '20120215'
-    var regionName = 'us-east-1'
-    var serviceName = 'iam'
-
-    var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + key);
-    var kRegion = CryptoJS.HmacSHA256(regionName, kDate);
-    var kService = CryptoJS.HmacSHA256(serviceName, kRegion);
-    var kSigning = CryptoJS.HmacSHA256("aws4_request", kService);
-
-    return kSigning;
-}
-
-function getSignatureKey() {
-    var kDate = CryptoJS.HmacSHA256(getDateStamp(), "AWS4" + metadata.configuration["UserID"]);
+function getSignatureKey(dateStamp) {
+    var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + metadata.configuration["UserID"]);
     var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
     var kService = CryptoJS.HmacSHA256("lex", kRegion);
     var kSigning = CryptoJS.HmacSHA256("aws4_request", kService);
@@ -131,13 +116,15 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         };
 
         var bodyText = JSON.stringify(body);
-        var signature = getSignatureKey();
         var authKey = CryptoJS.HmacSHA256(bodyText, signature);
+        var amzDate = getAmzDate(new Date().toISOString());
+        var authDate = amzDate.split("T")[0];
+        var signature = getSignatureKey(amzDate);
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${getURLDate()}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${authKey}`);
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${authKey}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('X-Amz-Date', getDateStamp());
+        xhr.setRequestHeader('X-Amz-Date', amzDate);
         xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.SHA256(bodyText).toString());
         xhr.setRequestHeader('Content-Length', bodyText.length.toString());
 
