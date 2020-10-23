@@ -112,17 +112,17 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var host = `runtime.lex.${configuration["AwsRegion"]}.amazonaws.com`;
         var bodyHash = CryptoJS.SHA256(bodyText).toString();
         var url = `/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
-        var authHeader = `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`;
+        var authHeader = `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-content-sha256, Signature=${authKey}`;
         var postURL = `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
         
         var canonicalReq = 
             'POST\n' + 
             url + 
             '\n\ncontent-type:application/json' + 
-            '\nhost:' + host + 
-            '\n' +
-            'x-amz-date:' + amzDate + 
-            '\ncontent-type;host;x-amz-date' + 
+            '\nhost:' + host +
+            '\nx-amz-date:' + amzDate; 
+            '\nx-amz-content-sha256:' + bodyHash +
+            '\ncontent-type;host;x-amz-date;x-amz-content-sha256' + 
             '\n' + bodyHash;
 
         // hash the canonical request
@@ -156,11 +156,12 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
             }
         };
 
-        xhr.open("POST", "https://hookb.in/RZeagyBlzrHREEj72O3Y");//postURL);
+        xhr.open("POST", postURL);
         xhr.setRequestHeader('Authorization', authHeader);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Host', host);
         xhr.setRequestHeader('X-Amz-Date', amzDate);
+        xhr.setRequestHeader('X-Amz-Content-SHA256', bodyHash);
 
         xhr.send(bodyText);
     });
