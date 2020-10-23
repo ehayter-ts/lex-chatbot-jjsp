@@ -100,26 +100,6 @@ async function onexecuteMessage(methodName: string, properties: SingleRecord, co
 
 function onexecutePostText(properties: SingleRecord, configuration: SingleRecord): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            try {
-                if (xhr.readyState !== 4) return;
-                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
-
-                var obj = JSON.parse(xhr.responseText);
-                postResult({
-                    "outputText": obj.message,
-                });
-                resolve();
-            } catch (e) {
-                reject(e);
-            }
-        };
-
-        var body = {
-            'inputText': properties["inputText"].toString()
-        };
-
         var bodyText = JSON.stringify(body);
         var amzDate = getAmzDate(new Date().toISOString());
         var authDate = amzDate.split("T")[0];
@@ -150,6 +130,29 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
 
         // Sign our String-to-Sign with our Signing Key
         var authKey = CryptoJS.HmacSHA256(stringToSign, signature);
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            try {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
+
+                var obj = JSON.parse(xhr.responseText);
+                postResult({
+                    "outputText": obj.message,
+                });
+                resolve();
+            } catch (e) {
+                postResult({
+                    "outputText": `Signature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
+                });
+                resolve();
+            }
+        };
+        
+        var body = {
+            'inputText': properties["inputText"].toString()
+        };
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
         xhr.setRequestHeader('Content-Type', 'application/json');
