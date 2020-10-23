@@ -116,7 +116,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var canonicalReq = 
             'POST\n' + 
             url + 
-            '\n\ncontent-type:application/json' + 
+            '\n\ncontent-type:application/json;charset=UTF-8' + 
             '\nhost:' + host + 
             '\n' +
             'x-amz-date:' + amzDate + 
@@ -155,11 +155,11 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         };
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         xhr.setRequestHeader('Host', host);
         xhr.setRequestHeader('X-Amz-Date', amzDate);
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`);
 
-        xhr.send(body);
+        xhr.send(bodyText);
     });
 }
