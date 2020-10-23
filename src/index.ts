@@ -156,14 +156,15 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
             }
         };
 
-        xhr.open("POST", "https://hookb.in/RZeagyBlzrHREEj72O3Y");//postURL);
+        xhr.open("POST", postURL);
         xhr.setRequestHeader('Authorization', authHeader);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Host', host);
         xhr.setRequestHeader('X-Amz-Date', amzDate);
         xhr.setRequestHeader('X-Amz-Content-SHA256', bodyHash);
         xhr.setRequestHeader('Content-Length', (bodyText.length - 2).toString());
-
+        xhr.withCredentials = true;
+        
         xhr.send(bodyText);
     });
 }
