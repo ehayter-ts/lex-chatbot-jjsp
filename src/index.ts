@@ -30,23 +30,23 @@ metadata = {
         "UserSecret": {
             displayName: "User Secret",
             type: "string",
-            value: "u8S5VsNV5FCZ6Kjwkgh7CLnbiY6jnINnNmqBx74M"
+            value: ""
         }
     }
 };
 
 function getAmzDate(dateStr) {
-    var chars = [":","-"];
-    for (var i=0;i<chars.length;i++) {
-      while (dateStr.indexOf(chars[i]) != -1) {
-        dateStr = dateStr.replace(chars[i],"");
-      }
+    var chars = [":", "-"];
+    for (var i = 0; i < chars.length; i++) {
+        while (dateStr.indexOf(chars[i]) != -1) {
+            dateStr = dateStr.replace(chars[i], "");
+        }
     }
     dateStr = dateStr.split(".")[0] + "Z";
     return dateStr;
-  }
+}
 
-function getSignatureKey(dateStamp:string) {
+function getSignatureKey(dateStamp: string) {
     var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + metadata.configuration["UserSecret"]);
     var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
     var kService = CryptoJS.HmacSHA256("lex", kRegion);
@@ -101,15 +101,15 @@ async function onexecuteMessage(methodName: string, properties: SingleRecord, co
 function onexecutePostText(properties: SingleRecord, configuration: SingleRecord): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             try {
                 if (xhr.readyState !== 4) return;
                 if (xhr.status !== 200) throw new Error("Failed with status " + xhr.status);
 
                 var obj = JSON.parse(xhr.responseText);
                 postResult({
-                        "outputText": obj.message,
-                    });
+                    "outputText": obj.message,
+                });
                 resolve();
             } catch (e) {
                 reject(e);
@@ -123,8 +123,27 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var bodyText = JSON.stringify(body);
         var amzDate = getAmzDate(new Date().toISOString());
         var authDate = amzDate.split("T")[0];
-        var signature = getSignatureKey(amzDate);
+        var signature = getSignatureKey(authDate);
         var authKey = CryptoJS.HmacSHA256(bodyText, signature);
+
+        var canonicalReq = 'POST\n/\nhost:' + `runtime.lex.${configuration["AwsRegion"]}.amazonaws.com` + '\n' +
+            'x-amz-content-sha256:' + CryptoJS.SHA256(bodyText).toString() + '\n' +
+            'x-amz-date:' + amzDate + '\n' +
+            '\n' +
+            'host;x-amz-content-sha256;x-amz-date' + '\n' +
+            CryptoJS.SHA256(bodyText).toString();
+
+        // hash the canonical request
+        var canonicalReqHash = CryptoJS.SHA256(canonicalReq).toString();
+
+        // form our String-to-Sign
+        var stringToSign = 'AWS4-HMAC-SHA256\n' +
+            amzDate + '\n' +
+            authDate + '/' + configuration["AwsRegion"] + '/lex/aws4_request\n' +
+            canonicalReqHash;
+
+        // Sign our String-to-Sign with our Signing Key
+        var authKey = CryptoJS.HmacSHA256(stringToSign, signature);
 
         xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${authKey}`);
