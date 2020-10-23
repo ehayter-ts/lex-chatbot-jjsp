@@ -127,7 +127,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         };
 
         var body = {
-            inputText: properties["inputText"].toString()
+            'inputText': properties["inputText"].toString()
         };
 
         var bodyText = JSON.stringify(body);
