@@ -127,14 +127,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var authKey = CryptoJS.HmacSHA256(bodyText, signature);
         var host = `runtime.lex.${configuration["AwsRegion"]}.amazonaws.com`;
         var bodyHash = CryptoJS.SHA256(bodyText).toString();
-        var url = `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
+        var url = `/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
 
-        var canonicalReq = 'POST\n' + url + '\nhost:' + host + '\n' +
-            'x-amz-content-sha256:' + bodyHash + '\n' +
-            'x-amz-date:' + amzDate + '\n' +
-            '\n' +
-            'host;x-amz-content-sha256;x-amz-date' + '\n' +
-            CryptoJS.SHA256(bodyText).toString();
+        var canonicalReq = 'POST\n' + url + '\n\ncontent-type:application/json' + '\nhost:' + host + '\n' +
+            'x-amz-date:' + amzDate + '\ncontent-type;host;x-amz-date' + '\n' + CryptoJS.SHA256(bodyText).toString();
 
         // hash the canonical request
         var canonicalReqHash = CryptoJS.SHA256(canonicalReq).toString();
@@ -148,12 +144,10 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         // Sign our String-to-Sign with our Signing Key
         var authKey = CryptoJS.HmacSHA256(stringToSign, signature);
 
-        xhr.open("POST", url);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${authKey}`);
+        xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', amzDate);
-        xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.SHA256(bodyText).toString());
-        xhr.setRequestHeader('Content-Length', bodyText.length.toString());
+        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`);
 
         xhr.send(bodyText);
     });
