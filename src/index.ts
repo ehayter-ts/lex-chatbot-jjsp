@@ -150,7 +150,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 resolve();
             } catch (e) {
                 postResult({
-                    "outputText": `Header: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
+                    "outputText": `Error: ${e.message}\nHeader: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
                 });
                 resolve();
             }
@@ -164,7 +164,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.setRequestHeader('X-Amz-Content-SHA256', bodyHash);
         xhr.setRequestHeader('Content-Length', (bodyText.length - 2).toString());
         xhr.withCredentials = true;
-        
+
         xhr.send(bodyText);
     });
 }
