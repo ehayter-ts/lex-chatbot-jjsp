@@ -148,7 +148,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         // Sign our String-to-Sign with our Signing Key
         var authKey = CryptoJS.HmacSHA256(stringToSign, signature);
 
-        xhr.open("POST", ``);
+        xhr.open("POST", url);
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=${authKey}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', amzDate);
