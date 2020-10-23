@@ -112,7 +112,9 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var host = `runtime.lex.${configuration["AwsRegion"]}.amazonaws.com`;
         var bodyHash = CryptoJS.SHA256(bodyText).toString();
         var url = `/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
-
+        var authHeader = `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`;
+        var postURL = `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`;
+        
         var canonicalReq = 
             'POST\n' + 
             url + 
@@ -148,17 +150,17 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 resolve();
             } catch (e) {
                 postResult({
-                    "outputText": `Signature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
+                    "outputText": `Header: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
                 });
                 resolve();
             }
         };
 
-        xhr.open("POST", `https://runtime.lex.${configuration["AwsRegion"]}.amazonaws.com/bot/${configuration["BotName"]}/alias/${configuration["BotAlias"]}/user/${configuration["UserID"]}/text`);
+        xhr.open("POST", postURL);
+        xhr.setRequestHeader('Authorization', authHeader);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Host', host);
         xhr.setRequestHeader('X-Amz-Date', amzDate);
-        xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`);
 
         xhr.send(bodyText);
     });
