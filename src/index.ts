@@ -103,7 +103,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         var body = {
             'inputText': properties["inputText"].toString()
         };
-        
+
         var bodyText = JSON.stringify(body);
         var amzDate = getAmzDate(new Date().toISOString());
         var authDate = amzDate.split("T")[0];
@@ -160,6 +160,6 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.setRequestHeader('X-Amz-Date', amzDate);
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${authDate}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=${authKey}`);
 
-        xhr.send(bodyText);
+        xhr.send(body);
     });
 }
