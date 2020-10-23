@@ -137,7 +137,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         xhr.setRequestHeader('Authorization', `AWS4-HMAC-SHA256 Credential=${configuration["UserID"].toString()}/${getURLDate()}/${configuration["AwsRegion"].toString()}/lex/aws4_request, SignedHeaders=host;x-amz-date;x-amz-content-sha256, Signature=${signature}`);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('X-Amz-Date', getDateStamp());
-        xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.SHA256(bodyText).toString());
+        xhr.setRequestHeader('X-Amz-Content-Sha256', CryptoJS.SHA256(properties["inputText"].toString()).toString());
         xhr.setRequestHeader('Content-Length', bodyText.length.toString());
 
         xhr.send(bodyText);
