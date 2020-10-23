@@ -150,7 +150,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 resolve();
             } catch (e) {
                 postResult({
-                    "outputText": `Error: ${e.message}\nHeader: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
+                    "outputText": `ErrorMessage: ${e.message}\nHeader: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
                 });
                 resolve();
             }
