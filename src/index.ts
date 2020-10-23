@@ -26,6 +26,11 @@ metadata = {
             displayName: "User ID",
             type: "string",
             value: "AKIARXLDA4AZB24QPA72"
+        },
+        "UserSecret": {
+            displayName: "User Secret",
+            type: "string",
+            value: "u8S5VsNV5FCZ6Kjwkgh7CLnbiY6jnINnNmqBx74M"
         }
     }
 };
@@ -42,7 +47,7 @@ function getAmzDate(dateStr) {
   }
 
 function getSignatureKey(dateStamp:string) {
-    var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + metadata.configuration["UserID"]);
+    var kDate = CryptoJS.HmacSHA256(dateStamp, "AWS4" + metadata.configuration["UserSecret"]);
     var kRegion = CryptoJS.HmacSHA256(metadata.configuration["AwsRegion"], kDate);
     var kService = CryptoJS.HmacSHA256("lex", kRegion);
     var kSigning = CryptoJS.HmacSHA256("aws4_request", kService);
