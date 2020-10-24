@@ -152,7 +152,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 'Content-Length': (bodyText.length - 2).toString()
             },
             body: bodyText
-          })
+          }, { accessKeyId: configuration["UserID"].toString(), secretAccessKey: metadata.configuration["UserSecret"].toString() })
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
