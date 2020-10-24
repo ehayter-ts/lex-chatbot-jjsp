@@ -1,7 +1,6 @@
 import '@k2oss/k2-broker-core';
 import  CryptoJS from "crypto-js/core";
 import 'crypto-js/hmac-sha256';
-import aws4 from 'aws4';
 
 metadata = {
     systemName: "AWS_Lex_ChatBot",
@@ -123,7 +122,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
             '\nhost:' + host +
             '\nx-amz-content-sha256:' + bodyHash +
             '\nx-amz-date:' + amzDate +
-            '\ncontent-type;host;x-amz-content-sha256;x-amz-date' + 
+            '\n\ncontent-type;host;x-amz-content-sha256;x-amz-date' + 
             '\n' + bodyHash;
 
         // hash the canonical request
@@ -138,22 +137,6 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
         // Sign our String-to-Sign with our Signing Key
         var authKey = CryptoJS.HmacSHA256(signature, stringToSign);
 
-        var awsString = aws4.sign({
-            host: host,
-            service: 'lex',
-            region: configuration["AwsRegion"].toString(),
-            method: 'POST',
-            path: url,
-            headers: {
-                'Content-Type': 'application/json',
-                'Host': host,
-                'X-Amz-Date': amzDate,
-                'X-Amz-Content-SHA256': bodyHash,
-                'Content-Length': (bodyText.length - 2).toString()
-            },
-            body: bodyText
-          }, { accessKeyId: configuration["UserID"].toString(), secretAccessKey: metadata.configuration["UserSecret"].toString() })
-
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             try {
@@ -167,7 +150,7 @@ function onexecutePostText(properties: SingleRecord, configuration: SingleRecord
                 resolve();
             } catch (e) {
                 postResult({
-                    "outputText": `ErrorMessage: ${e.message}\nAWSString: ${awsString}\nHeader: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
+                    "outputText": `ErrorMessage: ${e.message}\nHeader: ${authHeader}\nURL: ${postURL}\nSignature: ${signature}\nBodyHash: ${bodyHash}\nAmzDate: ${amzDate}\nAuthDate: ${authDate}\nCanonicalReq: ${canonicalReq}\nAuthKey: ${authKey}\nCanonicalHash: ${canonicalReqHash}\nStringToSign: ${stringToSign}`,
                 });
                 resolve();
             }
